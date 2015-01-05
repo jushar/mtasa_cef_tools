@@ -10,6 +10,10 @@ WebUIManager = {
 	getInstance = function() assert(WebUIManager.Instance, "WebUIManager has not been initialised yet") return WebUIManager.Instance end;
 }
 
+--
+-- WebUIManager's constructor
+-- Returns: The WebUIManager instance
+--
 function WebUIManager:constructor()
 	self.m_Stack = {}
 	
@@ -39,6 +43,7 @@ function WebUIManager:constructor()
 			for i = topIndex, 1, -1 do
 				local ui = self.m_Stack[i]
 				local pos, size = ui:getPosition(), ui:getSize()
+				local browser = ui:getUnderlyingBrowser()
 				
 				-- Are we within the browser rect?
 				if absX >= pos.x and absY >= pos.y and absX < pos.x + size.x and absY < pos.y + size.y then
@@ -51,6 +56,7 @@ function WebUIManager:constructor()
 					-- Move to front if the current browser isn't the currently foccused one
 					if i ~= topIndex then
 						self:moveWindowToFrontByIndex(i)
+						browser:focus()
 					end
 					
 					-- Stop here (the click has been processed!)
@@ -61,10 +67,19 @@ function WebUIManager:constructor()
 	)
 end
 
+--
+-- Registers a window at the manager
+-- Parameters:
+--    window: The web UI window (WebWindow)
+--
 function WebUIManager:registerWindow(window)
 	table.insert(self.m_Stack, window)
 end
 
+--
+-- Unlinks a window from the manager
+-- Parameters:
+--     window: The web UI window (WebWindow)
 function WebUIManager:unregisterWindow(window)
 	for k, v in pairs(self.m_Stack) do
 		if window == v then
@@ -74,10 +89,20 @@ function WebUIManager:unregisterWindow(window)
 	end
 end
 
+--
+-- Moves the specified window to the front (by WebWindow instance)
+-- Parameters:
+--     window: The web UI window you want to move to the front (WebWindow)
+--
 function WebUIManager:moveWindowToFront(window)
 	-- TODO
 end
 
+--
+-- Moves a window to the front by index (fast internal use)
+-- Parameters:
+--      index: The index the window has on the drawing stack
+--
 function WebUIManager:moveWindowToFrontByIndex(index)
 	-- Make a backup of the window at the specified index
 	local ui = self.m_Stack[index]
