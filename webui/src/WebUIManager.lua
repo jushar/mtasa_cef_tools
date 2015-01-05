@@ -11,11 +11,12 @@ WebUIManager = {
 }
 
 function WebUIManager:constructor()
-	self.m_Map = {}
+	self.m_Stack = {}
 	
 	addEventHandler("onClientRender", root,
 		function()
-			for k, ui in ipairs(self.m_Map) do
+			-- Draw from bottom to top
+			for k, ui in ipairs(self.m_Stack) do
 				ui:draw()
 			end
 		end
@@ -23,7 +24,7 @@ function WebUIManager:constructor()
 	
 	addEventHandler("onClientCursorMove", root,
 		function(relX, relY, absX, absY)
-			for k, ui in pairs(self.m_Map) do
+			for k, ui in pairs(self.m_Stack) do
 				local browser = ui:getUnderlyingBrowser()
 				browser:injectMouseMove(absX, absY)
 			end
@@ -32,15 +33,28 @@ function WebUIManager:constructor()
 	
 	addEventHandler("onClientClick", root,
 		function(button, state, absX, absY)
-			-- TODO: Add support for several browser layers (=> Z-ordering)
-			local isDown = state == "down"
-			
-			for k, ui in pairs(self.m_Map) do
-				local browser = ui:getUnderlyingBrowser()
-				if isDown then
-					browser:injectMouseDown(button)
-				else
-					browser:injectMouseUp(button)
+			local topIndex = #self.m_Stack
+		
+			-- Process from top to bottom
+			for i = topIndex, 1, -1 do
+				local ui = self.m_Stack[i]
+				local pos, size = ui:getPosition(), ui:getSize()
+				
+				-- Are we within the browser rect?
+				if absX >= pos.x and absY >= pos.y and absX < pos.x + size.x and absY < pos.y + size.y then
+					if state == "down" then
+						browser:injectMouseDown(button)
+					else
+						browser:injectMouseUp(button)
+					end
+					
+					-- Move to front if the current browser isn't the currently foccused one
+					if i ~= topIndex then
+						self:moveWindowToFrontByIndex(i)
+					end
+					
+					-- Stop here (the click has been processed!)
+					break
 				end
 			end
 		end
@@ -48,14 +62,29 @@ function WebUIManager:constructor()
 end
 
 function WebUIManager:registerWindow(window)
-	table.insert(self.m_Map, window)
+	table.insert(self.m_Stack, window)
 end
 
 function WebUIManager:unregisterWindow(window)
-	for k, v in pairs(self.m_Map) do
+	for k, v in pairs(self.m_Stack) do
 		if window == v then
-			table.remove(self.m_Map, k)
+			table.remove(self.m_Stack, k)
 			break
 		end
 	end
+end
+
+function WebUIManager:moveWindowToFront(window)
+	-- TODO
+end
+
+function WebUIManager:moveWindowToFrontByIndex(index)
+	-- Make a backup of the window at the specified index
+	local ui = self.m_Stack[index]
+	
+	-- Remove it from the list temporally
+	table.remove(self.m_Stack, index)
+	
+	-- Append it to the end
+	table.insert(self.m_Stack, ui)
 end
