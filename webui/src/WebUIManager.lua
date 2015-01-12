@@ -136,7 +136,7 @@ end
 --
 function WebUIManager.getFocussedBrowser()
 	for k, browser in pairs(getElementsByType("webbrowser")) do
-		if browser:isFocussed() then
+		if browser:isFocused() then
 			return browser
 		end
 	end
