@@ -8,6 +8,10 @@
 WebUIManager = {
 	new = function(self, ...) local o=setmetatable({},{__index=self}) o:constructor(...) WebUIManager.Instance = o return o end;
 	getInstance = function() assert(WebUIManager.Instance, "WebUIManager has not been initialised yet") return WebUIManager.Instance end;
+	
+	Settings = {
+		ScrollSpeed = 50;
+	};
 }
 
 --
@@ -36,6 +40,15 @@ function WebUIManager:constructor()
 		end
 	)
 	
+	local function onMouseWheel(key, state, direction)
+		local browser = WebUIManager.getFocussedBrowser()
+		if browser then
+			browser:injectMouseWheel(direction*WebUIManager.Settings.ScrollSpeed, 0)
+		end
+	end
+	bindKey("mouse_wheel_up", "down", onMouseWheel, 1)
+	bindKey("mouse_wheel_down", "down", onMouseWheel, -1)
+	
 	addEventHandler("onClientClick", root,
 		function(button, state, absX, absY)
 			local topIndex = #self.m_Stack
@@ -57,8 +70,8 @@ function WebUIManager:constructor()
 					-- Move to front if the current browser isn't the currently foccused one
 					if i ~= topIndex then
 						self:moveWindowToFrontByIndex(i)
-						browser:focus()
 					end
+					browser:focus()
 					
 					-- Stop here (the click has been processed!)
 					break
@@ -115,4 +128,17 @@ function WebUIManager:moveWindowToFrontByIndex(index)
 	
 	-- Append it to the end
 	table.insert(self.m_Stack, ui)
+end
+
+--
+-- Static function that returns the currently focussed browser
+-- Returns: The focussed browser element
+--
+function WebUIManager.getFocussedBrowser()
+	for k, browser in pairs(getElementsByType("webbrowser")) do
+		if browser:isFocussed() then
+			return browser
+		end
+	end
+	return false
 end

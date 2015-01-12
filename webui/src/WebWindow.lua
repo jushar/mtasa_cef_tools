@@ -21,12 +21,14 @@ function WebWindow:constructor(pos, size, initialPage, transparent)
 	self.m_Position = pos
 	self.m_Size = size
 	self.m_Transparent = transparent
+	self.m_IsLocal = initialPage:sub(0, 7) ~= "http://" and initialPage:sub(0, 8) ~= "https://"
+	self.m_PostGUI = false
 
 	-- Create the CEF browser in local mode
-	self.m_Window = Browser.create(size.x, size.y, true, transparent)
+	self.m_Browser = Browser.create(size.x, size.y, self.m_IsLocal, transparent)
 	
 	-- Load the initial page
-	self.m_Window:loadURL(initialPage)
+	self.m_Browser:loadURL(initialPage)
 	
 	-- Register the window
 	WebUIManager:getInstance():registerWindow(self)
@@ -39,7 +41,7 @@ function WebWindow:destroy()
 	-- Unlink from manager
 	WebUIManager:getInstance():unregisterWindow(self)
 	
-	self.m_Window:destroy()
+	self.m_Browser:destroy()
 end
 
 --
@@ -76,12 +78,19 @@ function WebWindow:isTransparent()
 end
 
 --
+-- Returns the mode the browser is running in
+-- Returns: true for local mode, false for remote mode
+--
+function WebWindow:isLocal()
+	return self.m_IsLocal
+end
+--
 -- Sets the rendering state
 -- Parameters:
 --    state: false if you want to pause rendering, true if you want to continue rendering
 --
 function WebWindow:setRenderingPaused(state)
-	return self.m_Window:setRenderingPaused(state)
+	return self.m_Browser:setRenderingPaused(state)
 end
 
 --
@@ -89,12 +98,20 @@ end
 -- Returns: The CEF browser (Browser, texture)
 --
 function WebWindow:getUnderlyingBrowser()
-	return self.m_Window
+	return self.m_Browser
+end
+
+--
+-- Executes a piece of javascript code
+-- Returns: true in case of success, false otherwise
+--
+function WebWindow:executeJavascript(code)
+	return self.m_Browser:executeJavascript(code)
 end
 
 --
 -- Draws the window (normally called by the ui manager)
 --
 function WebWindow:draw()
-	dxDrawImage(self.m_Position, self.m_Size, self.m_Window, 0, 0, 0, -1, true)
+	dxDrawImage(self.m_Position, self.m_Size, self.m_Browser, 0, 0, 0, -1, self.m_PostGUI)
 end

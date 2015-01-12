@@ -16,10 +16,13 @@ addEventHandler("onClientResourceStart", resourceRoot,
 		-- Initialise the web ui manager (to be able to render web UIs)
 		WebUIManager:new()
 		
-		-- Create our UIs
-		local window1 = WebWindow:new(Vector2(screenWidth/2-width/2-100, screenHeight/2-height/2-100), Vector2(width, height), "tests/html/ui1.html", true)
-		local window2 = WebWindow:new(Vector2(screenWidth/2-width/2, screenHeight/2-height/2), Vector2(width, height), "tests/html/ui2.html", true)
-		local window3 = WebWindow:new(Vector2(screenWidth/2-width/2+100, screenHeight/2-height/2+100), Vector2(width, height), "tests/html/ui3.html", true)
+		-- Create our (local) UIs
+		local window1 = WebWindow:new(Vector2(screenWidth/2-width/2-200, screenHeight/2-height/2-200), Vector2(width, height), "tests/html/ui1.html", true)
+		local window2 = WebWindow:new(Vector2(screenWidth/2-width/2-100, screenHeight/2-height/2-100), Vector2(width, height), "tests/html/ui2.html", true)
+		local window3 = WebWindow:new(Vector2(screenWidth/2-width/2, screenHeight/2-height/2), Vector2(width, height), "tests/html/ui3.html", true)
+		
+		-- Create some (remote) websites
+		local window4 = WebWindow:new(Vector2(screenWidth/2-width/2+100, screenHeight/2-height/2+100), Vector2(width, height), "http://youtube.com", true)
 		
 		addEvent("ui2:onClose")
 		addEventHandler("ui2:onClose", window2:getUnderlyingBrowser(),
