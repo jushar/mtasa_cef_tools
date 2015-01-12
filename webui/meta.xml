@@ -1,5 +1,6 @@
 <meta>
 	<info name="WebUI" author="Jusonex" type="misc"/>
+	<oop>true</oop>
 	
 	<!-- Sourcecode: Include the following files in your own gamemode -->
 	<script src="src/WebWindow.lua" type="client"/>
@@ -7,5 +8,11 @@
 	
 	<!-- Tests and examples -->
 	<script src="tests/MyTestUI.lua" type="client"/>
+	<script src="tests/Main.lua" type="client"/>
+	
+	<!-- Test HTML files -->
+	<file src="tests/html/ui1.html"/>
+	<file src="tests/html/ui2.html"/>
+	<file src="tests/html/ui3.html"/>
 	
 </meta>

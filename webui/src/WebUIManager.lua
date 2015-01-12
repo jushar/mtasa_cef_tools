@@ -6,7 +6,7 @@
 -- *
 -- ****************************************************************************
 WebUIManager = {
-	new = function(...) local o=setmetatable({}, WebUIManager) o:constructor(...) WebUIManager.Instance = o return o end;
+	new = function(self, ...) local o=setmetatable({},{__index=self}) o:constructor(...) WebUIManager.Instance = o return o end;
 	getInstance = function() assert(WebUIManager.Instance, "WebUIManager has not been initialised yet") return WebUIManager.Instance end;
 }
 
@@ -30,7 +30,8 @@ function WebUIManager:constructor()
 		function(relX, relY, absX, absY)
 			for k, ui in pairs(self.m_Stack) do
 				local browser = ui:getUnderlyingBrowser()
-				browser:injectMouseMove(absX, absY)
+				local pos = ui:getPosition()
+				browser:injectMouseMove(absX - pos.x, absY - pos.y)
 			end
 		end
 	)
@@ -80,6 +81,7 @@ end
 -- Unlinks a window from the manager
 -- Parameters:
 --     window: The web UI window (WebWindow)
+--
 function WebUIManager:unregisterWindow(window)
 	for k, v in pairs(self.m_Stack) do
 		if window == v then

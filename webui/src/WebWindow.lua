@@ -5,7 +5,7 @@
 -- *  PURPOSE:     WebWindow class definition
 -- *
 -- ****************************************************************************
-WebWindow = { new = function(...) local o=setmetatable({}, WebWindow) o:constructor(...) return o end }
+WebWindow = { new = function(self, ...) local o=setmetatable({},{__index=self}) o:constructor(...) return o end }
 
 --
 -- WebWindow's constructor
@@ -26,7 +26,7 @@ function WebWindow:constructor(pos, size, initialPage, transparent)
 	self.m_Window = Browser.create(size.x, size.y, true, transparent)
 	
 	-- Load the initial page
-	self.m_Window:loadURL(url)
+	self.m_Window:loadURL(initialPage)
 	
 	-- Register the window
 	WebUIManager:getInstance():registerWindow(self)
@@ -35,7 +35,7 @@ end
 --
 -- WebWindow's destructor
 --
-function WebWindow:destructor()
+function WebWindow:destroy()
 	-- Unlink from manager
 	WebUIManager:getInstance():unregisterWindow(self)
 	
