@@ -84,11 +84,12 @@ end
 --
 function WebUIManager:unregisterWindow(window)
 	for k, v in pairs(self.m_Stack) do
-		if window == v then
+		if v == window then
 			table.remove(self.m_Stack, k)
-			break
+			return true
 		end
 	end
+	return false
 end
 
 --
