@@ -6,6 +6,7 @@
 -- *
 -- ****************************************************************************
 WebWindow = { new = function(self, ...) local o=setmetatable({},{__index=self}) o:constructor(...) return o end }
+WebWindow.WindowType = {Normal = 0, Frame = 1};
 
 --
 -- WebWindow's constructor
@@ -114,4 +115,8 @@ end
 --
 function WebWindow:draw()
 	dxDrawImage(self.m_Position, self.m_Size, self.m_Browser, 0, 0, 0, -1, self.m_PostGUI)
+end
+
+function WebWindow:getType()
+	return WebWindow.WindowType.Normal
 end

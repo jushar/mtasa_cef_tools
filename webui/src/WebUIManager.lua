@@ -11,6 +11,7 @@ WebUIManager = {
 	
 	Settings = {
 		ScrollSpeed = 50;
+		TitleBarHeight = 25;
 	};
 }
 
@@ -41,7 +42,7 @@ function WebUIManager:constructor()
 	)
 	
 	local function onMouseWheel(key, state, direction)
-		local browser = WebUIManager.getFocussedBrowser()
+		local browser = WebUIManager.getFocusedBrowser()
 		if browser then
 			browser:injectMouseWheel(direction*WebUIManager.Settings.ScrollSpeed, 0)
 		end
@@ -59,15 +60,30 @@ function WebUIManager:constructor()
 				local pos, size = ui:getPosition(), ui:getSize()
 				local browser = ui:getUnderlyingBrowser()
 				
+				if state == "up" and ui.movefunc then
+					removeEventHandler("onClientCursorMove", root, ui.movefunc)
+					ui.movefunc = nil
+				end
+				
 				-- Are we within the browser rect?
 				if absX >= pos.x and absY >= pos.y and absX < pos.x + size.x and absY < pos.y + size.y then
+					if ui:getType() == WebWindow.WindowType.Frame and state == "down" then
+						local diff = Vector2(absX-pos.x, absY-pos.y)
+						ui.movefunc = function(relX, relY, absX, absY) ui:setPosition(Vector2(absX, absY) - diff) end
+						
+						if diff.y <= WebUIManager.Settings.TitleBarHeight then
+							addEventHandler("onClientCursorMove", root, ui.movefunc)
+							break
+						end
+					end
+				
 					if state == "down" then
 						browser:injectMouseDown(button)
 					else
 						browser:injectMouseUp(button)
 					end
 					
-					-- Move to front if the current browser isn't the currently foccused one
+					-- Move to front if the current browser isn't the currently focused one
 					if i ~= topIndex then
 						self:moveWindowToFrontByIndex(i)
 					end
@@ -134,7 +150,7 @@ end
 -- Static function that returns the currently focussed browser
 -- Returns: The focussed browser element
 --
-function WebUIManager.getFocussedBrowser()
+function WebUIManager.getFocusedBrowser()
 	for k, browser in pairs(getElementsByType("webbrowser")) do
 		if browser:isFocused() then
 			return browser

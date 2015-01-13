@@ -4,6 +4,7 @@
 	
 	<!-- Sourcecode: Include the following files in your own gamemode -->
 	<script src="src/WebWindow.lua" type="client"/>
+	<script src="src/FrameWebWindow.lua" type="client"/>
 	<script src="src/WebUIManager.lua" type="client"/>
 	
 	<!-- Tests and examples -->
