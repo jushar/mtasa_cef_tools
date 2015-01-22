@@ -28,8 +28,13 @@ function WebWindow:constructor(pos, size, initialPage, transparent)
 	-- Create the CEF browser in local mode
 	self.m_Browser = Browser.create(size.x, size.y, self.m_IsLocal, transparent)
 	
-	-- Load the initial page
-	self.m_Browser:loadURL(initialPage)
+	-- Use asynchronous API (onClientBrowserCreated is triggered right after the CEF webview has been created)
+	addEventHandler("onClientBrowserCreated", self.m_Browser,
+		function()
+			-- Load the initial page
+			self.m_Browser:loadURL(initialPage)
+		end
+	)
 	
 	-- Register the window
 	WebUIManager:getInstance():registerWindow(self)
@@ -117,6 +122,20 @@ function WebWindow:draw()
 	dxDrawImage(self.m_Position, self.m_Size, self.m_Browser, 0, 0, 0, -1, self.m_PostGUI)
 end
 
+--
+-- Returns the window type (supported types are Normal and Frame at the moment)
+--
 function WebWindow:getType()
 	return WebWindow.WindowType.Normal
+end
+
+--
+-- Adds an event handlers to the web window
+-- Parameters:
+--    eventName: the event name
+--    func: the function you want to attach (the first parameter of the callback function is the WebWindow instance)
+--
+function WebWindow:addEvent(eventName, func)
+	addEvent(eventName)
+	addEventHandler(eventName, self.m_Browser, function(...) func(self, ...) end)
 end

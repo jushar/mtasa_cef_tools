@@ -27,11 +27,10 @@ addEventHandler("onClientResourceStart", resourceRoot,
 		local window4 = FrameWebWindow:new(Vector2(screenWidth/2-width/2+200, screenHeight/2-height/2+200), Vector2(width, height), "tests/html/ui1.html", true)
 		window4:setTitle("Window #5")
 		
-		addEvent("ui2:onClose")
-		addEventHandler("ui2:onClose", window2:getUnderlyingBrowser(),
-			function()
+		window1:addEvent("ui2:onClose",
+			function(webwindow)
 				outputChatBox("Closing ui2...")
-				window2:destroy()
+				webwindow:destroy()
 			end
 		)
 		

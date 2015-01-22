@@ -119,6 +119,11 @@ end
 --     window: The web UI window (WebWindow)
 --
 function WebUIManager:unregisterWindow(window)
+	-- Disable input if the browser we're about to destroy is focused
+	if window:getUnderlyingBrowser():isFocused() then
+		guiSetInputEnabled(false)
+	end
+
 	for k, v in pairs(self.m_Stack) do
 		if v == window then
 			table.remove(self.m_Stack, k)
