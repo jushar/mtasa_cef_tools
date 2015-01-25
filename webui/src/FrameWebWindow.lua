@@ -2,7 +2,7 @@
 -- *
 -- *  PROJECT:     MTA:SA CEF utilities (https://github.com/Jusonex/mtasa_cef_tools)
 -- *  FILE:        webui/src/FrameWebWindow.lua
--- *  PURPOSE:     WebWindow class definition
+-- *  PURPOSE:     FrameWebWindow class definition (inherits WebWindow)
 -- *
 -- ****************************************************************************
 FrameWebWindow = setmetatable({ new = function(self, ...) local o=setmetatable({},{__index=self}) o:constructor(...) return o end },{__index=WebWindow})

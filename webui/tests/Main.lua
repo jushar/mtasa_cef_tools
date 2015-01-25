@@ -17,7 +17,7 @@ addEventHandler("onClientResourceStart", resourceRoot,
 		WebUIManager:new()
 		
 		-- Create our (local) UIs
-		local window1 = WebWindow:new(Vector2(screenWidth/2-width/2-100, screenHeight/2-height/2-100), Vector2(width, height), "tests/html/ui2.html", true)
+		--[[local window1 = WebWindow:new(Vector2(screenWidth/2-width/2-100, screenHeight/2-height/2-100), Vector2(width, height), "tests/html/ui2.html", true)
 		local window2 = WebWindow:new(Vector2(screenWidth/2-width/2, screenHeight/2-height/2), Vector2(width, height), "tests/html/ui3.html", true)
 		
 		-- Create some (remote) websites
@@ -33,7 +33,7 @@ addEventHandler("onClientResourceStart", resourceRoot,
 				webwindow:destroy()
 			end
 		)
-		
+		]]
 		showCursor(true)
 	end
 )

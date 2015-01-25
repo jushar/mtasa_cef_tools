@@ -1,0 +1,6 @@
+<meta>
+	<info name="CEF examples" description="CEF non-OOP examples which use the export API" type="script"/>
+	<include resource="webui"/>
+	
+	<script src="switcher.lua" type="client"/>
+</meta>

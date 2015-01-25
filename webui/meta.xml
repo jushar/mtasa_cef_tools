@@ -6,6 +6,15 @@
 	<script src="src/WebWindow.lua" type="client"/>
 	<script src="src/FrameWebWindow.lua" type="client"/>
 	<script src="src/WebUIManager.lua" type="client"/>
+	<script src="src/ExportsAPI.lua" type="client"/>
+	
+	<!-- Exports API -->
+	<export function="startUp" type="client"/>
+	<export function="createWebWindow" type="client"/>
+	<export function="destroyWebWindow" type="client"/>
+	<export function="getWebWindowPosition" type="client"/>
+	<export function="setWebWindowPosition" type="client"/>
+	<export function="loadWebWindowURL" type="client"/>
 	
 	<!-- Tests and examples -->
 	<script src="tests/MyTestUI.lua" type="client"/>

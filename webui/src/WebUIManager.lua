@@ -6,7 +6,7 @@
 -- *
 -- ****************************************************************************
 WebUIManager = {
-	new = function(self, ...) local o=setmetatable({},{__index=self}) o:constructor(...) WebUIManager.Instance = o return o end;
+	new = function(self, ...) if self.Instance then return false end local o=setmetatable({},{__index=self}) o:constructor(...) self.Instance = o return o end;
 	getInstance = function() assert(WebUIManager.Instance, "WebUIManager has not been initialised yet") return WebUIManager.Instance end;
 	
 	Settings = {
@@ -41,14 +41,16 @@ function WebUIManager:constructor()
 		end
 	)
 	
-	local function onMouseWheel(key, state, direction)
-		local browser = WebUIManager.getFocusedBrowser()
-		if browser then
-			browser:injectMouseWheel(direction*WebUIManager.Settings.ScrollSpeed, 0)
+	local function onMouseWheel(button, state)
+		if button == "mouse_wheel_down" or button == "mouse_wheel_up" then
+			local browser = WebUIManager.getFocusedBrowser()
+			if browser then
+				local direction = button == "mouse_wheel_up" and 1 or -1
+				browser:injectMouseWheel(direction*WebUIManager.Settings.ScrollSpeed, 0)
+			end
 		end
 	end
-	bindKey("mouse_wheel_up", "down", onMouseWheel, 1)
-	bindKey("mouse_wheel_down", "down", onMouseWheel, -1)
+	addEventHandler("onClientKey", root, onMouseWheel)
 	
 	addEventHandler("onClientClick", root,
 		function(button, state, absX, absY)
