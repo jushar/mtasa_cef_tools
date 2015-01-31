@@ -61,7 +61,7 @@ end
 --
 -- Sets the position of the window
 -- Parameters:
---    pos: A Vector2 containg the position
+--    pos: A Vector2 containing the position
 --
 function WebWindow:setPosition(pos)
 	self.m_Position = pos

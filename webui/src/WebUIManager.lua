@@ -91,17 +91,25 @@ function WebUIManager:constructor()
 					end
 					browser:focus()
 					
-					-- Enable input mode
-					guiSetInputEnabled(true)
-					
 					-- Stop here (the click has been processed!)
 					return
 				end
 			end
 			
-			-- Unfocus and disable input mode
+			-- Unfocus
 			Browser.focus(nil)
-			guiSetInputEnabled(false)
+		end
+	)
+	
+	addEventHandler("onClientBrowserInputFocusChanged", resourceRoot,
+		function(gainedFocus)
+			if gainedFocus then
+				-- Enable input mode
+				guiSetInputEnabled(true)
+			else
+				-- Disabled input mode
+				guiSetInputEnabled(false)
+			end
 		end
 	)
 end

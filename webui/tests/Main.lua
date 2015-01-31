@@ -26,6 +26,7 @@ addEventHandler("onClientResourceStart", resourceRoot,
 		-- Draw framewindows
 		local window4 = FrameWebWindow:new(Vector2(screenWidth/2-width/2+200, screenHeight/2-height/2+200), Vector2(width, height), "tests/html/ui1.html", true)
 		window4:setTitle("Window #5")
+		addEventHandler("onClientBrowserInputFocusChanged", window4:getUnderlyingBrowser(), function(state) outputChatBox("Changed: "..tostring(state)) end)
 		
 		window1:addEvent("ui2:onClose",
 			function(webwindow)
@@ -34,6 +35,7 @@ addEventHandler("onClientResourceStart", resourceRoot,
 			end
 		)
 		]]
+		
 		showCursor(true)
 	end
 )
