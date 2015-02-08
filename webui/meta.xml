@@ -16,11 +16,6 @@
 	<export function="setWebWindowPosition" type="client"/>
 	<export function="loadWebWindowURL" type="client"/>
 	
-	<!-- Settings -->
-	<settings>
-		<setting name="show_examples" value="true" friendlyname="Show examples"/>
-	</settings>
-
 	<!-- Tests and examples -->
 	<script src="examples/MyTestUI.lua" type="client"/>
 	<script src="examples/Main.lua" type="client"/>
@@ -29,5 +24,6 @@
 	<file src="examples/html/ui1.html"/>
 	<file src="examples/html/ui2.html"/>
 	<file src="examples/html/ui3.html"/>
+	<file src="examples/html/media/mta_cef.png"/>
 	
 </meta>
