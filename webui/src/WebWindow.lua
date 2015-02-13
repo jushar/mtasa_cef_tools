@@ -108,6 +108,15 @@ function WebWindow:getUnderlyingBrowser()
 end
 
 --
+-- Returns the texture you can use to draw the webview into the 3d world
+-- This method is technically the same as getUnderlyingBrowser, but use the function in the correct context
+-- Returns: A DirectX texture (similar to the one returned by dxCreateTexture)
+--
+function WebWindow:getTexture()
+	return self.m_Browser
+end
+
+--
 -- Executes a piece of javascript code
 -- Returns: true in case of success, false otherwise
 --

@@ -48,3 +48,10 @@ function loadWebWindowURL(identifier, url)
 	
 	return webWindow:getUnderlyingBrowser():loadURL(url)
 end
+
+function getWebWindowTexture(identifier)
+	local webWindow = webWindows[identifier]
+	if not webWindow then return false end
+	
+	return webWindow:getTexture()
+end

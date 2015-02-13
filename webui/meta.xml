@@ -15,6 +15,7 @@
 	<export function="getWebWindowPosition" type="client"/>
 	<export function="setWebWindowPosition" type="client"/>
 	<export function="loadWebWindowURL" type="client"/>
+	<export function="getWebWindowTexture" type="client"/>
 	
 	<!-- Tests and examples -->
 	<script src="examples/MyTestUI.lua" type="client"/>

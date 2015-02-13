@@ -96,8 +96,9 @@ function WebUIManager:constructor()
 				end
 			end
 			
-			-- Unfocus
+			-- Unfocus and disable input
 			Browser.focus(nil)
+			guiSetInputEnabled(false)
 		end
 	)
 	
@@ -112,6 +113,19 @@ function WebUIManager:constructor()
 			end
 		end
 	)
+	
+	addEventHandler("onClientResourceStop", resourceRoot, function() self:destroy() end)
+end
+
+--
+-- WebUIManager's destructor
+--
+function WebUIManager:destroy()
+	guiSetInputEnabled(false)
+	
+	for k, v in pairs(self.m_Stack) do
+		v:destroy()
+	end
 end
 
 --

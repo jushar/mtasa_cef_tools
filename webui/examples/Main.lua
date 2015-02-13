@@ -5,7 +5,7 @@
 -- *  PURPOSE:     Resource entry point
 -- *
 -- ****************************************************************************
-local SHOW_EXAMPLES = true
+local SHOW_EXAMPLES = false
 
 addEventHandler("onClientResourceStart", resourceRoot,
 	function()
