@@ -1,0 +1,5 @@
+<meta>
+	<info author="Woovie, Jusonex"/>
+	
+	<script src="client.lua" type="client"/>
+</meta>

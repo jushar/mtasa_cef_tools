@@ -1,0 +1,6 @@
+<meta>
+	<info author="Jusonex"/>
+	<include resource="webui"/>
+	
+	<script src="client.lua" type="client"/>
+</meta>
