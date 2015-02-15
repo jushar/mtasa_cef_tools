@@ -75,6 +75,12 @@ function WebUIManager:constructor()
 						
 						if diff.y <= WebUIManager.Settings.TitleBarHeight then
 							addEventHandler("onClientCursorMove", root, ui.movefunc)
+							
+							-- Move to front if the current browser isn't the currently focused one
+							if i ~= topIndex then
+								self:moveWindowToFrontByIndex(i)
+							end
+							
 							break
 						end
 					end
