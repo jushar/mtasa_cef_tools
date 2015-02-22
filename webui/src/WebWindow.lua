@@ -15,18 +15,22 @@ WebWindow.WindowType = {Normal = 0, Frame = 1};
 --    size: the size (Vector2)
 --    initialPage: path to the initial page (string)
 --    transparent: does it support transparency or is it fully opaque? (bool)
+--    browserPos: the browser size (default: pos)
+--    browserSize: the browser size (default: size)
 -- Returns: The WebWindow instance
 --
-function WebWindow:constructor(pos, size, initialPage, transparent)
+function WebWindow:constructor(pos, size, initialPage, transparent, browserPos, browserSize)
 	-- Read necessary information
 	self.m_Position = pos
 	self.m_Size = size
+	self.m_BrowserPos = browserPos
+	self.m_BrowserSize = browserSize or size
 	self.m_Transparent = transparent
 	self.m_IsLocal = initialPage:sub(0, 7) ~= "http://" and initialPage:sub(0, 8) ~= "https://"
 	self.m_PostGUI = false
 
 	-- Create the CEF browser in local mode
-	self.m_Browser = Browser.create(size.x, size.y, self.m_IsLocal, transparent)
+	self.m_Browser = Browser.create(self.m_BrowserSize, self.m_IsLocal, transparent)
 	
 	-- Use asynchronous API (onClientBrowserCreated is triggered right after the CEF webview has been created)
 	addEventHandler("onClientBrowserCreated", self.m_Browser,
@@ -59,11 +63,15 @@ function WebWindow:getPosition()
 end
 
 --
--- Sets the position of the window
+-- Sets the position of the window. Also adjusts the browsers position
 -- Parameters:
 --    pos: A Vector2 containing the position
 --
 function WebWindow:setPosition(pos)
+	-- Adjust the browser's position
+	local diff = self.m_Position - pos
+	self.m_BrowserPos = self.m_BrowserPos - diff
+
 	self.m_Position = pos
 end
 
@@ -73,6 +81,22 @@ end
 --
 function WebWindow:getSize()
 	return self.m_Size
+end
+
+--
+-- Returns the browser's position
+-- Returns: A Vector2 containing the position
+--
+function WebWindow:getBrowserPosition()
+	return self.m_BrowserPos
+end
+
+--
+-- Returns the browser's size
+-- Returns: A Vector2 containing the size
+--
+function WebWindow:getBrowserSize()
+	return self.m_BrowserSize
 end
 
 --
@@ -128,7 +152,7 @@ end
 -- Draws the window (normally called by the ui manager)
 --
 function WebWindow:draw()
-	dxDrawImage(self.m_Position, self.m_Size, self.m_Browser, 0, 0, 0, -1, self.m_PostGUI)
+	dxDrawImage(self.m_BrowserPos, self.m_BrowserSize, self.m_Browser, 0, 0, 0, -1, self.m_PostGUI)
 end
 
 --

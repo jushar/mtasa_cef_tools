@@ -12,6 +12,7 @@ WebUIManager = {
 	Settings = {
 		ScrollSpeed = 50;
 		TitleBarHeight = 25;
+		UseInternalClickMechanism = true;
 	};
 }
 
@@ -33,9 +34,13 @@ function WebUIManager:constructor()
 	
 	addEventHandler("onClientCursorMove", root,
 		function(relX, relY, absX, absY)
+			if not isCursorShowing() then
+				return
+			end
+		
 			for k, ui in pairs(self.m_Stack) do
 				local browser = ui:getUnderlyingBrowser()
-				local pos = ui:getPosition()
+				local pos = ui:getBrowserPosition()
 				browser:injectMouseMove(absX - pos.x, absY - pos.y)
 			end
 		end
@@ -52,67 +57,14 @@ function WebUIManager:constructor()
 	end
 	addEventHandler("onClientKey", root, onMouseWheel)
 	
-	addEventHandler("onClientClick", root,
-		function(button, state, absX, absY)
-			local topIndex = #self.m_Stack
-		
-			-- Process from top to bottom
-			for i = topIndex, 1, -1 do
-				local ui = self.m_Stack[i]
-				local pos, size = ui:getPosition(), ui:getSize()
-				local browser = ui:getUnderlyingBrowser()
-				
-				if state == "up" and ui.movefunc then
-					removeEventHandler("onClientCursorMove", root, ui.movefunc)
-					ui.movefunc = nil
-				end
-				
-				-- Are we within the browser rect?
-				if absX >= pos.x and absY >= pos.y and absX < pos.x + size.x and absY < pos.y + size.y then
-					if ui:getType() == WebWindow.WindowType.Frame and state == "down" then
-						local diff = Vector2(absX-pos.x, absY-pos.y)
-						ui.movefunc = function(relX, relY, absX, absY) ui:setPosition(Vector2(absX, absY) - diff) end
-						
-						if diff.y <= WebUIManager.Settings.TitleBarHeight then
-							addEventHandler("onClientCursorMove", root, ui.movefunc)
-							
-							-- Move to front if the current browser isn't the currently focused one
-							if i ~= topIndex then
-								self:moveWindowToFrontByIndex(i)
-							end
-							
-							break
-						end
-					end
-				
-					if state == "down" then
-						browser:injectMouseDown(button)
-					else
-						browser:injectMouseUp(button)
-					end
-					
-					-- Move to front if the current browser isn't the currently focused one
-					if i ~= topIndex then
-						self:moveWindowToFrontByIndex(i)
-					end
-					browser:focus()
-					
-					-- Stop here (the click has been processed!)
-					return
-				end
-			end
-			
-			-- Unfocus and disable input
-			Browser.focus(nil)
-			guiSetInputEnabled(false)
-		end
-	)
-	
 	addEventHandler("onClientBrowserInputFocusChanged", resourceRoot,
 		function(gainedFocus)
 			if gainedFocus then
+				-- Set focus if it has not been done yet
+				--source:focus()
+			
 				-- Enable input mode
-				guiSetInputEnabled(true)
+				--guiSetInputEnabled(true)
 			else
 				-- Disabled input mode
 				guiSetInputEnabled(false)
@@ -120,6 +72,9 @@ function WebUIManager:constructor()
 		end
 	)
 	
+	if self.Settings.UseInternalClickMechanism then
+		addEventHandler("onClientClick", root, function(...) self:invokeClick(...) end)
+	end
 	addEventHandler("onClientResourceStop", resourceRoot, function() self:destroy() end)
 end
 
@@ -198,5 +153,98 @@ function WebUIManager.getFocusedBrowser()
 			return browser
 		end
 	end
+	return false
+end
+
+--
+-- Sets a web property (list of available settings below the file info header)
+-- Parameters:
+--     name: The property name
+--     value: The property value
+--
+function WebUIManager:setProperty(name, value)
+	self.Settings[name] = value
+end
+
+--
+-- Sends a click message (call this in your own click handler implementation, example on GitHub)
+-- Parameters:
+--    button: The button (possible values: left, right, middle)
+--    state: The button's state (possible values: down, up)
+--    absX, absY: The click position
+--
+function WebUIManager:invokeClick(button, state, absX, absY)
+	local topIndex = #self.m_Stack
+		
+	-- Process from top to bottom
+	for i = topIndex, 1, -1 do
+		local ui = self.m_Stack[i]
+		local pos, size = ui:getPosition(), ui:getSize()
+		local browser = ui:getUnderlyingBrowser()
+		
+		if state == "up" and ui.movefunc then
+			removeEventHandler("onClientCursorMove", root, ui.movefunc)
+			ui.movefunc = nil
+		end
+		
+		-- Are we within the browser rect?
+		if absX >= pos.x and absY >= pos.y and absX < pos.x + size.x and absY < pos.y + size.y then
+			if ui:getType() == WebWindow.WindowType.Frame and state == "down" then
+				local diff = Vector2(absX-pos.x, absY-pos.y)
+				ui.movefunc = function(relX, relY, absX, absY) ui:setPosition(Vector2(absX, absY) - diff) end
+				
+				if diff.y <= WebUIManager.Settings.TitleBarHeight then
+					addEventHandler("onClientCursorMove", root, ui.movefunc)
+					
+					-- Move to front if the current browser isn't the currently focused one
+					if i ~= topIndex then
+						self:moveWindowToFrontByIndex(i)
+					end
+					
+					break
+				end
+			end
+		
+			if state == "down" then
+				browser:injectMouseDown(button)
+			else
+				browser:injectMouseUp(button)
+			end
+			
+			-- Move to front if the current browser isn't the currently focused one
+			if i ~= topIndex then
+				self:moveWindowToFrontByIndex(i)
+			end
+			browser:focus()
+			
+			-- Stop here (the click has been processed!)
+			return true
+		end
+	end
+	
+	-- Unfocus and disable input
+	Browser.focus(nil)
+	guiSetInputEnabled(false)
+	return false
+end
+
+--
+-- Checks whether a specified position is within any window
+-- Parameters:
+--    x: The x coordinate
+--    y: The y coordinate
+-- Returns:
+--    true if within any window, false otherwise
+--
+function WebUIManager:isPositionWithinWindow(x, y)
+	for i = #self.m_Stack, 1, -1 do
+		local ui = self.m_Stack[i]
+		local pos, size = ui:getPosition(), ui:getSize()
+		
+		if x >= pos.x and y >= pos.y and x < pos.x + size.x and y < pos.y + size.y then
+			return true
+		end
+	end
+	
 	return false
 end
