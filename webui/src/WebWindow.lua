@@ -23,7 +23,7 @@ function WebWindow:constructor(pos, size, initialPage, transparent, browserPos, 
 	-- Read necessary information
 	self.m_Position = pos
 	self.m_Size = size
-	self.m_BrowserPos = browserPos
+	self.m_BrowserPos = browserPos or pos
 	self.m_BrowserSize = browserSize or size
 	self.m_Transparent = transparent
 	self.m_IsLocal = initialPage:sub(0, 7) ~= "http://" and initialPage:sub(0, 8) ~= "https://"
