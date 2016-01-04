@@ -26,7 +26,7 @@ function WebWindow:constructor(pos, size, initialPage, transparent, browserPos, 
 	self.m_BrowserPos = browserPos or pos
 	self.m_BrowserSize = browserSize or size
 	self.m_Transparent = transparent
-	self.m_IsLocal = initialPage:sub(0, 7) ~= "http://" and initialPage:sub(0, 8) ~= "https://"
+	self.m_IsLocal = initialPage:sub(0, 11) == "http://mta/" and not initialPage:sub(0, 8) ~= "https://"
 	self.m_PostGUI = false
 
 	-- Create the CEF browser in local mode
