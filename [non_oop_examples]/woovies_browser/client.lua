@@ -1,3 +1,4 @@
+
 local browser = {}
 browser.browsers = {}
 browser.homepage = "http://youtube.com/"
@@ -15,7 +16,7 @@ local sx, sy = guiGetScreenSize()
 function newTab()
 	for i=1,10 do
 		if browser.tabs[i] == nil then
-			browser.browsers[i] = createBrowser ( 1160, 740, false )
+			browser.browsers[i] = createBrowser ( 1110, 700, false )
 			browser.history[i] = {}
 			browser.tabs[i] = guiCreateTab ( "Tab #"..i, browser.tabpanel )
 			browser.buttons[i] = {
@@ -29,6 +30,7 @@ function newTab()
 			addEventHandler ( "onClientGUIClick", browser.buttons[i][3], goPage, false )
 			addEventHandler ( "onClientGUIClick", browser.buttons[i][4], goBack, false )
 			addEventHandler ( "onClientGUIClick", browser.buttons[i][5], goForward, false )
+                       
 			addEventHandler ( "onClientCursorMove", root,
 				function ( relx, rely, absx, absy )
 					local ix, iy = guiGetPosition ( browser.window, false )
@@ -39,10 +41,21 @@ function newTab()
 				function ( button, state )
 					if state == "down" then
 						injectBrowserMouseDown ( browser.browsers[i], button )
-					else
+                                               else
 						injectBrowserMouseUp ( browser.browsers[i], button )
+                                                
 					end
-				end )
+end )
+	           		
+                               function onKey(button)
+	                              if button == "mouse_wheel_down" then
+		                               injectBrowserMouseWheel(browser.browsers[i], -40, 0)
+	                             else
+		                                injectBrowserMouseWheel(browser.browsers[i], 40, 0)
+                                     end
+end
+ addEventHandler("onClientKey", root, onKey)	
+
 			browser.historyPos[i] = 1
 			browser.currentTab = i
 			addEventHandler ( "onClientBrowserCreated", browser.browsers[i], function() loadBrowserURL ( source, guiGetText ( browser.buttons[i][2] ) ) end )
@@ -121,13 +134,13 @@ end
 function clientRender()
 	if guiGetVisible ( browser.window ) then
 		local ix, iy = guiGetPosition ( browser.window, false )
-		ix, iy, iw, ih = ix + 20, iy + 80, 1160, 700
+		ix, iy, iw, ih = ix + 20, iy + 80, 1110, 700
 		dxDrawImage ( ix, iy, iw, ih, browser.browsers[browser.currentTab], 0, 0, 0, tocolor ( 255, 255, 255, 255 ), true )
 	end
 end
  
 function resourceStart()
-	browser.window = guiCreateWindow ( sx/2-600, sy/2-400, 1200, 800, "Woovie's Browser v0.1", false )
+	browser.window = guiCreateWindow ( sx/2-575, sy/2-400, 1200, 800, "Woovie's Browser v0.1", false )
 	guiSetVisible ( browser.window, false )
 	browser.tabpanel = guiCreateTabPanel ( 10, 30, 1180, 760, false, browser.window )
 	addEventHandler ( "onClientGUITabSwitched", browser.tabpanel, changeTab )
